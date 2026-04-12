@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/redux/dbConnect'; // Your DB connection utility
-import Story from '@/models/Story';     // Your Mongoose model
+import dbConnect from '@/lib/redux/dbConnect';
+import Story from '@/models/Story';
+import cloudinary from '@/lib/redux/cloudinary';
 
 export async function GET(req: Request) {
   await dbConnect();
 
   const { searchParams } = new URL(req.url);
-  const category = searchParams.get('category'); // "public" | "heritage"
-  const status = searchParams.get('status');     // "pending" | "published" | "archived"
+  const category = searchParams.get('category');
+  const status = searchParams.get('status');
 
-  // Build query object based on actual schema fields
   const query: Record<string, string> = {};
   if (category) query.category = category;
   if (status) query.status = status;
@@ -23,10 +23,53 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  await dbConnect();
-  const data = await req.json();
-  const newStory = await Story.create(data);
-  return NextResponse.json(newStory, { status: 201 });
+  try {
+    await dbConnect();
+    const formData = await req.formData();
+
+    // Extract fields from formData
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const title = formData.get("title");
+    const narrative = formData.get("narrative");
+    const mission = formData.get("mission");
+    const category = formData.get("category") || "public";
+    const relation = formData.get("relation") || "public-observer";
+    const file = formData.get("image") as File | null;
+
+    let imageUrl = "";
+
+    if (file && file.size > 0) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const uploadResponse: any = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "stories" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        ).end(buffer);
+      });
+
+      imageUrl = uploadResponse.secure_url;
+    }
+
+    const newStory = await Story.create({
+      name,
+      email,
+      title,
+      narrative,
+      mission,
+      category,
+      relation,
+      imageUrl,
+      status: category === 'heritage' ? 'pending' : 'published',
+    });
+
+    return NextResponse.json({ success: true, data: newStory }, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }
-
-
