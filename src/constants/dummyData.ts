@@ -1,0 +1,48 @@
+import { Story } from "@/types/story";
+
+export const DUMMY_STORIES: Story[] = [
+  {
+    _id: "1",
+    name: "John Glenn",
+    email: "john@nasa.gov",
+    title: "The Sky is Not the Limit",
+    narrative: "I remember watching the launch from the Cape. The energy was electric...",
+    mission: "challenger",
+    imageUrl: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400&h=250&fit=crop",
+    category: "heritage",
+    relation: "immediate-family",
+    isVerified: true,
+    isFeatured: true,
+    status: "published",
+    createdAt: "2023-10-01",
+  },
+  {
+    _id: "2",
+    name: "Sarah Miller",
+    email: "sarah@example.com",
+    title: "A Tribute to Heroes",
+    narrative: "Thinking about the bravery of the Columbia crew today...",
+    mission: "columbia",
+    imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=250&fit=crop",
+    category: "public",
+    relation: "public-observer",
+    isVerified: false,
+    isFeatured: false,
+    status: "pending",
+    createdAt: "2023-10-05",
+  },
+  {
+    _id: "3",
+    name: "Dr. Robert Aris",
+    email: "robert@space.org",
+    title: "My Colleague, My Friend",
+    narrative: "Working alongside the mission specialists was the highlight of my career...",
+    mission: "challenger",
+    category: "heritage",
+    relation: "colleague",
+    isVerified: true,
+    isFeatured: false,
+    status: "published",
+    createdAt: "2023-09-15",
+  }
+];

@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/lib/redux/storySlice.js", "src/lib/redux/store.ts"  ],
   "exclude": ["node_modules"]
 }
