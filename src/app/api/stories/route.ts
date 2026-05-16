@@ -55,10 +55,16 @@ export async function POST(req: Request) {
       imageUrl = uploadResponse.secure_url;
     }
 
-    const newStory = await Story.create({
-      name, email, title, narrative,
-      mission, category, relation, imageUrl,
-      status: "pending", // ✅ always pending — admin approves before it goes live
+      const newStory = await Story.create({
+      name:      String(name),
+      email:     String(email ?? ""),
+      title:     String(title),
+      narrative: String(narrative),
+      mission:   String(mission),
+      category:  String(category),
+      relation:  String(relation),
+      imageUrl,
+      status:    "pending",
     });
 
     return NextResponse.json({ success: true, data: newStory }, { status: 201 });
