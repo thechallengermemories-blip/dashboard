@@ -1,3 +1,4 @@
+import dns from "dns";
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -8,11 +9,6 @@ if (!MONGODB_URI) {
   );
 }
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections from growing exponentially
- * during API Route usage.
- */
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -20,6 +16,11 @@ if (!cached) {
 }
 
 async function dbConnect() {
+  // ✅ Same DNS fix as connectDB
+  if (process.env.NODE_ENV === "development") {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  }
+
   if (cached.conn) {
     return cached.conn;
   }

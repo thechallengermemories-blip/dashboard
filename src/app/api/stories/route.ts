@@ -6,13 +6,20 @@ import cloudinary from '@/lib/redux/cloudinary';
 export async function GET(req: Request) {
   await dbConnect();
 
+  // ✅ DNS fix
+  if (process.env.NODE_ENV === "development") {
+    const dns = await import("dns");
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  }
+
   const { searchParams } = new URL(req.url);
   const category = searchParams.get('category');
-  const status = searchParams.get('status');
+  const status   = searchParams.get('status');
 
   const query: Record<string, string> = {};
   if (category) query.category = category;
-  if (status) query.status = status;
+  if (status)   query.status   = status;
+  // ✅ No status param = returns ALL stories (pending + published + archived)
 
   try {
     const stories = await Story.find(query).sort({ createdAt: -1 });
@@ -27,45 +34,31 @@ export async function POST(req: Request) {
     await dbConnect();
     const formData = await req.formData();
 
-    // Extract fields from formData
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const title = formData.get("title");
+    const name      = formData.get("name");
+    const email     = formData.get("email");
+    const title     = formData.get("title");
     const narrative = formData.get("narrative");
-    const mission = formData.get("mission");
-    const category = formData.get("category") || "public";
-    const relation = formData.get("relation") || "public-observer";
-    const file = formData.get("image") as File | null;
+    const mission   = formData.get("mission");
+    const category  = formData.get("category") || "public";
+    const relation  = formData.get("relation") || "public-observer";
+    const file      = formData.get("image") as File | null;
 
     let imageUrl = "";
-
     if (file && file.size > 0) {
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
+      const buffer = Buffer.from(await file.arrayBuffer());
       const uploadResponse: any = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           { folder: "stories" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
+          (error, result) => { if (error) reject(error); else resolve(result); }
         ).end(buffer);
       });
-
       imageUrl = uploadResponse.secure_url;
     }
 
     const newStory = await Story.create({
-      name,
-      email,
-      title,
-      narrative,
-      mission,
-      category,
-      relation,
-      imageUrl,
-      status: category === 'heritage' ? 'pending' : 'published',
+      name, email, title, narrative,
+      mission, category, relation, imageUrl,
+      status: "pending", // ✅ always pending — admin approves before it goes live
     });
 
     return NextResponse.json({ success: true, data: newStory }, { status: 201 });

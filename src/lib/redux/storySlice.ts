@@ -35,6 +35,18 @@ export const fetchStories = createAsyncThunk(
   }
 );
 
+export const publishStory = createAsyncThunk(
+  'stories/publish',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`${API_URL}/${id}`, { status: 'published' });
+      return response.data as Story;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 // Fetch single story
 export const fetchStoryById = createAsyncThunk(
   'stories/fetchById',
@@ -147,7 +159,14 @@ const storySlice = createSlice({
       .addCase(deleteStory.fulfilled, (state, action: PayloadAction<string>) => {
         state.stories = state.stories.filter(s => s._id !== action.payload);
         state.success = true;
-      });
+      })
+
+      .addCase(publishStory.fulfilled, (state, action: PayloadAction<Story>) => {
+      const index = state.stories.findIndex(s => s._id === action.payload._id);
+      if (index !== -1) state.stories[index] = action.payload;
+      state.currentStory = action.payload;
+      state.success = true;
+    });
   },
 });
 

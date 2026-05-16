@@ -1,27 +1,31 @@
 'use client';
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/redux/store";
-import { 
-  CheckCircle, 
-  Star, 
-  Mail, 
-  User, 
-  Tag, 
-  ShieldCheck, 
-  ArrowLeft, 
-  Calendar,
-  BookOpen
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "@/lib/redux/store";
+import { publishStory } from "@/lib/redux/storySlice";
+import {
+  CheckCircle, Star, Mail, User, Tag, ShieldCheck,
+  ArrowLeft, Calendar, BookOpen, Send, Loader2
 } from "lucide-react";
 import Link from "next/link";
 
 export default function ViewStoryPage() {
-  const params = useParams();
-  const id = params.id as string;
-  
-  const story = useSelector((state: RootState) => 
+  const params   = useParams();
+  const id       = params.id as string;
+  const dispatch = useDispatch<AppDispatch>();
+  const [publishing, setPublishing] = useState(false);
+
+  const story = useSelector((state: RootState) =>
     state.stories.stories.find((s) => s._id === id)
   );
+
+  const handlePublish = async () => {
+    if (!story || publishing) return;
+    setPublishing(true);
+    await dispatch(publishStory(story._id!));
+    setPublishing(false);
+  };
 
   if (!story) {
     return (
@@ -39,13 +43,13 @@ export default function ViewStoryPage() {
   }
 
   return (
-    <div className=" mx-auto px-4  animate-in fade-in duration-500">
+    <div className="mx-auto px-4 animate-in fade-in duration-500">
       {/* Navigation */}
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="group inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 mb-8 transition-colors font-medium"
       >
-        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
       </Link>
 
@@ -53,19 +57,13 @@ export default function ViewStoryPage() {
         {/* Header/Image Section */}
         <div className="relative w-full h-[450px] bg-slate-900">
           {story.imageUrl ? (
-            <img 
-              src={story.imageUrl} 
-              alt={story.title} 
-              className="w-full h-full object-cover opacity-80" 
-            />
+            <img src={story.imageUrl} alt={story.title} className="w-full h-full object-cover opacity-80" />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-900">
               <BookOpen size={80} className="text-slate-600" />
             </div>
           )}
-          
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-          
           <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
             <div className="flex flex-wrap gap-2 mb-4">
               <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg shadow-blue-500/30">
@@ -86,7 +84,7 @@ export default function ViewStoryPage() {
         {/* Content Section */}
         <div className="p-8 md:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            
+
             {/* Main Narrative */}
             <div className="lg:col-span-8">
               <div className="flex items-center gap-2 mb-6 text-slate-400">
@@ -102,70 +100,88 @@ export default function ViewStoryPage() {
 
             {/* Meta Sidebar */}
             <div className="lg:col-span-4">
-              <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 sticky top-8">
-                <h3 className="text-slate-900 font-bold mb-6 flex items-center gap-2">
+              <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 sticky top-8 space-y-8">
+                <h3 className="text-slate-900 font-bold flex items-center gap-2">
                   Metadata Details
                 </h3>
-                
-                <div className="space-y-8">
-                  {/* Author Info */}
-                  <div className="group">
-                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Author</label>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-100 group-hover:text-blue-600 transition-colors">
-                        <User size={18} />
+
+                {/* Author */}
+                <div className="group">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Author</label>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-100 group-hover:text-blue-600 transition-colors">
+                      <User size={18} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 font-bold text-slate-900 text-base">
+                        {story.name}
+                        {story.isVerified && <CheckCircle size={16} className="text-blue-500 fill-blue-50" />}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-1.5 font-bold text-slate-900 text-base">
-                          {story.name}
-                          {story.isVerified && <CheckCircle size={16} className="text-blue-500 fill-blue-50" />}
+                      {story.email && (
+                        <div className="flex items-center gap-1.5 text-sm text-slate-500 font-medium">
+                          <Mail size={14} /> {story.email}
                         </div>
-                        {story.email && (
-                          <div className="flex items-center gap-1.5 text-sm text-slate-500 font-medium">
-                            <Mail size={14} /> {story.email}
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
+                </div>
 
-                  {/* Classification */}
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Classification</label>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                        <Tag size={18} className="text-blue-500" />
-                        <span className="font-semibold capitalize">{story.category}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                        <ShieldCheck size={18} className="text-indigo-500" />
-                        <span className="font-semibold capitalize text-sm">{story.relation?.replace("-", " ")}</span>
-                      </div>
+                {/* Classification */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Classification</label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                      <Tag size={18} className="text-blue-500" />
+                      <span className="font-semibold capitalize">{story.category}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                      <ShieldCheck size={18} className="text-indigo-500" />
+                      <span className="font-semibold capitalize text-sm">{story.relation?.replace("-", " ")}</span>
                     </div>
                   </div>
+                </div>
 
-                  {/* Status Badge */}
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Current Status</label>
-                    <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide bg-white border border-slate-100 shadow-sm">
-                      <div className={`w-2 h-2 rounded-full mr-2 ${story.status === 'published' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
-                      <span className={story.status === 'published' ? 'text-green-700' : 'text-amber-700'}>
-                        {story.status}
-                      </span>
-                    </div>
+                {/* Status + Publish button */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Current Status</label>
+                  <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide bg-white border border-slate-100 shadow-sm mb-4">
+                    <div className={`w-2 h-2 rounded-full mr-2 ${story.status === 'published' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
+                    <span className={story.status === 'published' ? 'text-green-700' : 'text-amber-700'}>
+                      {story.status}
+                    </span>
+                  </div>
+
+                  {/* ✅ Publish button — only shown when pending */}
+                  {story.status === 'pending' && (
+                    <button
+                      onClick={handlePublish}
+                      disabled={publishing}
+                      className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-sm shadow-green-200"
+                    >
+                      {publishing
+                        ? <><Loader2 size={16} className="animate-spin" /> Publishing…</>
+                        : <><Send size={16} /> Publish Story</>
+                      }
+                    </button>
+                  )}
+
+                  {story.status === 'published' && (
+                    <p className="text-green-600 text-xs font-semibold flex items-center gap-1.5 mt-1">
+                      <CheckCircle size={13} /> Live on the main site
+                    </p>
+                  )}
+                </div>
+
+                {/* Date */}
+                <div className="pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-400 text-sm">
+                    <Calendar size={14} />
+                    ID: {story._id?.slice(-8).toUpperCase()}
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
-        </div>
-      </div>
-
-      {/* Footer Meta */}
-      <div className="mt-8 flex justify-center items-center gap-6 text-slate-400 text-sm font-medium">
-        <div className="flex items-center gap-2">
-          <Calendar size={14} /> Registered Internal ID: {story._id.slice(-8).toUpperCase()}
         </div>
       </div>
     </div>
