@@ -36,400 +36,145 @@ export default function LoginPage() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@300;400;500;600&display=swap');
+      {/* Import clean sans-serif and monospace typography */}
+      <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
 
-        .login-root {
-          min-height: 100vh;
-          background-color: #07070D;
-          background-image:
-            radial-gradient(ellipse 80% 50% at 50% -10%, rgba(196,168,130,0.07) 0%, transparent 70%),
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 39px,
-              rgba(255,255,255,0.015) 39px,
-              rgba(255,255,255,0.015) 40px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 39px,
-              rgba(255,255,255,0.015) 39px,
-              rgba(255,255,255,0.015) 40px
-            );
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          font-family: 'Inter', sans-serif;
-        }
+      <div className="relative flex min-h-screen items-center justify-center bg-[#06070B] px-6 py-12 overflow-hidden font-['Plus_Jakarta_Sans',sans-serif]
+        bg-[linear-gradient(to_right,rgba(15,23,42,0.3)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.3)_1px,transparent_1px)] 
+        bg-[size:24px_24px]"
+      >
+        {/* Dynamic backdrop ambient glows */}
+        <div className="absolute top-[-10%] left-1/4 w-[600px] h-[400px] bg-teal-500/5 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-1/4 w-[500px] h-[400px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-        .login-shell {
-          width: 100%;
-          max-width: 420px;
-        }
-
-        /* ── emblem ── */
-        .emblem-wrap {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 36px;
-          gap: 0;
-        }
-
-        .emblem-ring {
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          border: 1.5px solid rgba(196,168,130,0.35);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          background: radial-gradient(circle at 40% 35%, rgba(196,168,130,0.08), transparent 70%);
-          box-shadow: 0 0 0 1px rgba(196,168,130,0.08), inset 0 1px 0 rgba(196,168,130,0.12);
-        }
-
-        .emblem-ring::before {
-          content: '';
-          position: absolute;
-          inset: 5px;
-          border-radius: 50%;
-          border: 1px dashed rgba(196,168,130,0.18);
-        }
-
-        .emblem-star {
-          font-size: 22px;
-          line-height: 1;
-          filter: drop-shadow(0 0 6px rgba(196,168,130,0.5));
-        }
-
-        .emblem-line {
-          width: 1px;
-          height: 28px;
-          background: linear-gradient(to bottom, rgba(196,168,130,0.4), transparent);
-        }
-
-        /* ── card ── */
-        .login-card {
-          background: #0F0F18;
-          border: 1px solid rgba(196,168,130,0.12);
-          border-radius: 4px;
-          padding: 40px 40px 36px;
-          position: relative;
-          box-shadow:
-            0 0 0 1px rgba(0,0,0,0.6),
-            0 24px 64px rgba(0,0,0,0.6),
-            inset 0 1px 0 rgba(255,255,255,0.04);
-        }
-
-        .login-card::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 10%; right: 10%;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(196,168,130,0.35), transparent);
-        }
-
-        /* ── header ── */
-        .card-header {
-          margin-bottom: 32px;
-        }
-
-        .mission-tag {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 10px;
-        }
-
-        .mission-tag-line {
-          flex: 1;
-          height: 1px;
-          background: rgba(196,168,130,0.18);
-        }
-
-        .mission-tag-text {
-          font-family: 'Inter', monospace;
-          font-size: 9px;
-          font-weight: 600;
-          letter-spacing: 0.2em;
-          color: rgba(196,168,130,0.5);
-          text-transform: uppercase;
-          white-space: nowrap;
-        }
-
-        .card-title {
-          font-family: 'EB Garamond', Georgia, serif;
-          font-size: 26px;
-          font-weight: 400;
-          color: #E8E4D9;
-          letter-spacing: 0.01em;
-          line-height: 1.2;
-          margin: 0 0 6px;
-        }
-
-        .card-subtitle {
-          font-size: 12.5px;
-          font-weight: 400;
-          color: rgba(196,168,130,0.55);
-          letter-spacing: 0.04em;
-        }
-
-        /* ── fields ── */
-        .field-group {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          margin-bottom: 24px;
-        }
-
-        .field {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-        }
-
-        .field-label {
-          font-size: 10.5px;
-          font-weight: 600;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(232,228,217,0.5);
-        }
-
-        .field-input {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 11px 14px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(196,168,130,0.12);
-          border-radius: 3px;
-          color: #E8E4D9;
-          font-family: 'Inter', sans-serif;
-          font-size: 14px;
-          font-weight: 400;
-          letter-spacing: 0.02em;
-          outline: none;
-          transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-          -webkit-appearance: none;
-        }
-
-        .field-input::placeholder {
-          color: rgba(232,228,217,0.2);
-          font-weight: 300;
-        }
-
-        .field-input:focus {
-          border-color: rgba(196,168,130,0.45);
-          background: rgba(196,168,130,0.04);
-          box-shadow: 0 0 0 3px rgba(196,168,130,0.06);
-        }
-
-        /* ── error ── */
-        .error-box {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          padding: 11px 14px;
-          background: rgba(220,80,80,0.07);
-          border: 1px solid rgba(220,80,80,0.2);
-          border-radius: 3px;
-          margin-bottom: 20px;
-        }
-
-        .error-icon {
-          font-size: 12px;
-          margin-top: 1px;
-          flex-shrink: 0;
-          opacity: 0.7;
-        }
-
-        .error-text {
-          font-size: 12.5px;
-          color: #E07070;
-          letter-spacing: 0.02em;
-          line-height: 1.45;
-        }
-
-        /* ── submit button ── */
-        .submit-btn {
-          width: 100%;
-          padding: 13px;
-          background: linear-gradient(135deg, #C4A882 0%, #A8895E 100%);
-          border: none;
-          border-radius: 3px;
-          color: #07070D;
-          font-family: 'Inter', sans-serif;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-          box-shadow: 0 2px 12px rgba(196,168,130,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .submit-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-          pointer-events: none;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-          opacity: 0.9;
-          box-shadow: 0 4px 20px rgba(196,168,130,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
-          transform: translateY(-1px);
-        }
-
-        .submit-btn:active:not(:disabled) {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        .submit-btn:disabled {
-          opacity: 0.45;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        .btn-inner {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-
-        .spinner {
-          width: 12px;
-          height: 12px;
-          border: 1.5px solid rgba(7,7,13,0.3);
-          border-top-color: #07070D;
-          border-radius: 50%;
-          animation: spin 0.7s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        /* ── footer ── */
-        .card-footer {
-          margin-top: 28px;
-          padding-top: 20px;
-          border-top: 1px solid rgba(196,168,130,0.08);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-
-        .footer-dot {
-          width: 3px;
-          height: 3px;
-          border-radius: 50%;
-          background: rgba(196,168,130,0.25);
-        }
-
-        .footer-text {
-          font-size: 10px;
-          font-weight: 500;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: rgba(196,168,130,0.25);
-        }
-
-        @media (max-width: 480px) {
-          .login-card { padding: 32px 24px 28px; }
-        }
-      `}</style>
-
-      <div className="login-root">
-        <div className="login-shell">
-
-          {/* Emblem */}
-          <div className="emblem-wrap">
-            <div className="emblem-ring">
-              <span className="emblem-star">✦</span>
+        <div className="w-full max-w-[440px] z-10 space-y-6">
+          
+          {/* Header & Status Indicator */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            
+            {/* Pulsing Telemetry Emblem */}
+            <div className="relative flex items-center justify-center w-14 h-14">
+              <div className="absolute inset-0 rounded-full border border-teal-500/20 animate-ping opacity-60" />
+              <div className="absolute inset-1 rounded-full border border-dashed border-teal-500/30" />
+              <div className="absolute inset-2.5 rounded-full bg-slate-950 border border-teal-500/40 flex items-center justify-center">
+                <svg className="w-4.5 h-4.5 text-teal-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
             </div>
-            <div className="emblem-line" />
+
+            {/* Network Active Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/5 border border-teal-500/15 rounded-full text-[10px] font-['JetBrains_Mono',monospace] text-teal-400 tracking-wider">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-teal-500"></span>
+              </span>
+              SECURE ACCESS NODE // ACTIVE
+            </div>
           </div>
 
-          {/* Card */}
-          <div className="login-card">
+          {/* Core Login Card */}
+          <div className="relative bg-[#0C0D14]/80 backdrop-blur-xl border border-slate-800/80 rounded-xl p-8 sm:p-10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-slate-800">
+            
+            {/* Top scanning laser edge glow */}
+            <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
 
-            {/* Header */}
-            <div className="card-header">
-              <div className="mission-tag">
-                <div className="mission-tag-line" />
-                <span className="mission-tag-text">STS-51-L Archive</span>
-                <div className="mission-tag-line" />
-              </div>
-              <h1 className="card-title">Challenger Archive</h1>
-              <p className="card-subtitle">Restricted access — authorized personnel only</p>
+            <div className="mb-8">
+              <h1 className="text-xl font-semibold text-slate-100 tracking-tight mb-1.5">
+                Challenger Archive
+              </h1>
+              <p className="text-xs text-slate-400 tracking-wide font-light">
+                Please authenticate to decrypt mission telemetry logs.
+              </p>
             </div>
 
-            {/* Fields */}
-            <div className="field-group">
-              <div className="field">
-                <label htmlFor="email" className="field-label">Email address</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  placeholder="you@example.com"
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="field-input"
-                  autoComplete="email"
-                />
+            {/* Inputs Container */}
+            <div className="space-y-5 mb-6">
+              
+              {/* Email field */}
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="email" className="text-[10px] font-bold font-['JetBrains_Mono',monospace] tracking-wider uppercase text-slate-400">
+                  User Terminal ID
+                </label>
+                <div className="relative group">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    placeholder="you@example.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="w-full px-4 py-3 bg-slate-950/40 border border-slate-800/80 rounded-lg text-slate-100 text-sm tracking-wide placeholder-slate-600 focus:outline-none focus:border-teal-500/40 focus:ring-1 focus:ring-teal-500/15 focus:bg-slate-950/90 transition-all duration-200"
+                    autoComplete="email"
+                  />
+                  <div className="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-slate-600 group-focus-within:text-teal-500/50 transition-colors">
+                    <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="field">
-                <label htmlFor="password" className="field-label">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  placeholder="••••••••"
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="field-input"
-                  autoComplete="current-password"
-                />
+
+              {/* Password field */}
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="password" className="text-[10px] font-bold font-['JetBrains_Mono',monospace] tracking-wider uppercase text-slate-400">
+                  Security Passcode
+                </label>
+                <div className="relative group">
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    placeholder="••••••••"
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="w-full px-4 py-3 bg-slate-950/40 border border-slate-800/80 rounded-lg text-slate-100 text-sm tracking-wide placeholder-slate-600 focus:outline-none focus:border-teal-500/40 focus:ring-1 focus:ring-teal-500/15 focus:bg-slate-950/90 transition-all duration-200"
+                    autoComplete="current-password"
+                  />
+                  <div className="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-slate-600 group-focus-within:text-teal-500/50 transition-colors">
+                    <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Error */}
+            {/* Error Output Panel */}
             {error && (
-              <div className="error-box">
-                <span className="error-icon">⚠</span>
-                <span className="error-text">{error}</span>
+              <div className="flex items-start gap-3 p-4 bg-red-950/15 border border-red-900/35 rounded-lg mb-6 animate-fadeIn">
+                <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+                <div className="text-xs text-red-400 font-['JetBrains_Mono',monospace] tracking-tight leading-relaxed">
+                  <span className="font-bold text-red-300">DECRYPTION_ERROR:</span> {error}
+                </div>
               </div>
             )}
 
-            {/* Submit */}
+            {/* Action Trigger Button */}
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="submit-btn"
+              className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40 rounded-lg text-slate-950 font-['JetBrains_Mono',monospace] text-xs font-bold tracking-[0.15em] uppercase transition-all duration-200 shadow-[0_0_24px_rgba(20,184,166,0.15)] relative overflow-hidden"
             >
-              <span className="btn-inner">
-                {loading && <span className="spinner" />}
-                {loading ? 'Authenticating…' : 'Sign In'}
+              <div className="absolute inset-0 bg-white/5 opacity-50 hover:opacity-100 pointer-events-none transition-opacity" />
+              <span className="flex items-center justify-center gap-2">
+                {loading && (
+                  <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                )}
+                {loading ? 'Decrypting Secure Node…' : 'Establish Link'}
               </span>
             </button>
 
-            {/* Footer */}
-            <div className="card-footer">
-              <div className="footer-dot" />
-              <span className="footer-text">Challenger Memorial Foundation</span>
-              <div className="footer-dot" />
+            {/* Technical Sub-metadata Footer */}
+            <div className="mt-8 pt-6 border-t border-slate-900 flex items-center justify-between text-[10px] font-['JetBrains_Mono',monospace] tracking-wider text-slate-500">
+              <span>SYS_INIT: STS-51-L</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+              <span>ARCHIVE_TRUSTEE_V.04</span>
             </div>
 
           </div>
