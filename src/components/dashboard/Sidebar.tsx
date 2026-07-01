@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, Settings, LogOut, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Settings, LogOut, X, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 
 const navItems = [
   { name: 'All Stories', href: '/', icon: LayoutDashboard },
   { name: 'Add Story',   href: '/stories/new', icon: PlusCircle },
+  { name: 'Crew Records', href: '/crew', icon: Users },
 ];
 
 interface SidebarProps {
